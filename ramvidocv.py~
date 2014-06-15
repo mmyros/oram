@@ -1,0 +1,187 @@
+#%%
+import numpy as np
+import cv2
+
+cap = cv2.VideoCapture('/home/m/Dropbox/maze/video/examples/3.mp4')
+
+fgbg = cv2.createBackgroundSubtractorMOG()
+
+#fgbg = cv2.BackgroundSubtractorMOG2()
+##%%
+### here be CAMSHIFT
+#
+## take first frame of the video
+#ret,frame = cap.read()
+#print(frame)
+## setup initial location of window
+#r,h,c,w = 250,90,400,125  # simply hardcoded the values
+#track_window = (c,r,w,h)
+#
+## set up the ROI for tracking
+#roi = frame[r:r+h, c:c+w]
+#hsv_roi =  cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#mask = cv2.inRange(hsv_roi, np.array((0., 60.,32.)), np.array((180.,255.,255.)))
+#roi_hist = cv2.calcHist([hsv_roi],[0],mask,[180],[0,180])
+#cv2.normalize(roi_hist,roi_hist,0,255,cv2.NORM_MINMAX)
+#
+## Setup the termination criteria, either 10 iteration or move by atleast 1 pt
+#term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
+### end CAMSHIFT
+#%%
+    
+def read():
+    ret, frame = cap.read()
+    
+#fgmask = fgbg.apply(frame)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    cv2.imshow('frame',gray)
+    k = cv2.waitKey(30) & 0xff
+    #if k == 27:
+    #    break
+def skip():
+    for i in range(1,100):
+        print i
+        read()
+def readbg():
+    ret, frame = cap.read()
+    fgmask = fgbg.apply(frame)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    #frame=togray(frame)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    #frame=frame-fgmask
+    
+    cv2.imshow('frame',gray)
+    k = cv2.waitKey(30) & 0xff
+ 
+def readbgsurf10():
+    for i in range(1,20):
+        readbgsurf()
+#% SURF 2
+def readbgsurf():
+    ret, frame = cap.read()
+    fgmask = fgbg.apply(frame)
+    img=fgmask
+    #surf = cv2.SURF(400)    
+    #kp, des = surf.detectAndCompute(img,None)
+    #len(kp)
+    #print surf.hessianThreshold
+    # We set it to some 50000. Remember, it is just for representing in picture.
+    # In actual cases, it is better to have a value 300-500
+    surf.hessianThreshold = 10000
+    
+    # Again compute keypoints and check its number.
+    print 'surf'
+    kp, des = surf.detectAndCompute(img,None)
+    print 'surf'
+    print len(kp)
+    img2 = cv2.drawKeypoints(frame,kp,None,(255,0,0),4)
+    plt.imshow(img2),plt.show()
+    #cv2.imshow('img2',img2)
+##%% SURF
+#img=frame    
+#surf = cv2.SURF(400)    
+#kp, des = surf.detectAndCompute(img,None)
+#len(kp)
+#print surf.hessianThreshold
+#400.0
+#
+## We set it to some 50000. Remember, it is just for representing in picture.
+## In actual cases, it is better to have a value 300-500
+#surf.hessianThreshold = 10000
+#
+## Again compute keypoints and check its number.
+#kp, des = surf.detectAndCompute(img,None)
+#
+#print len(kp)
+#img2 = cv2.drawKeypoints(img,kp,None,(255,0,0),4)
+#plt.imshow(img2),#plt.show()
+#cv2.imshow('img2',gray)
+#
+##%%    
+#def readcamsh():    
+#    #%
+#    global track_window
+#    ret, frame = cap.read()
+#   
+#    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#    dst = cv2.calcBackProject([hsv],[0],roi_hist,[0,180],1)
+#
+#    # apply meanshift to get the new location
+#    ret, track_window = cv2.CamShift(dst, track_window, term_crit)
+#    x,y,w,h = track_window
+#    cv2.rectangle(frame, (x,y), (x+w,y+h), 255,2)
+#    cv2.imshow('frame',frame)
+#
+#    k = cv2.waitKey(60) & 0xff
+##%%    
+#def readcamsh():    
+#    #%
+#    global track_window
+#    #ret, frame = cap.read()
+#   
+#    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#    dst = cv2.calcBackProject([hsv],[0],roi_hist,[0,180],1)
+#
+#    # apply meanshift to get the new location
+#    ret, track_window = cv2.CamShift(dst, track_window, term_crit)
+#    x,y,w,h = track_window
+#    cv2.rectangle(frame, (x,y), (x+w,y+h), 255,2)
+#    cv2.imshow('frame',frame)
+#
+#    k = cv2.waitKey(60) & 0xff
+#
+##    # Draw it on image
+##    pts = cv2.boxPoints(ret)
+##    pts = np.int0(pts)
+##    cv2.polylines(frame,[pts],True, 255,2)
+##    cv2.imshow('frame',frame)
+##
+##    k = cv2.waitKey(60) & 0xff
+#    
+##%% meanshift    
+## take first frame of the video
+#ret,frame = cap.read()
+#
+## setup initial location of window
+#r,h,c,w = 30,30,400,125  # simply hardcoded the values
+#track_window = (c,r,w,h)
+#
+## set up the ROI for tracking
+#roi = frame[r:r+h, c:c+w]
+#hsv_roi =  cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#mask = cv2.inRange(hsv_roi, np.array((0., 60.,32.)), np.array((180.,255.,255.)))
+#roi_hist = cv2.calcHist([hsv_roi],[0],mask,[180],[0,180])
+#cv2.normalize(roi_hist,roi_hist,0,255,cv2.NORM_MINMAX)
+#
+## Setup the termination criteria, either 10 iteration or move by atleast 1 pt
+#term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
+#
+#ret ,frame = cap.read()
+#
+#if ret == True:
+#    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#    dst = cv2.calcBackProject([hsv],[0],roi_hist,[0,180],1)
+#
+#    # apply meanshift to get the new location
+#    ret, track_window = cv2.meanShift(dst, track_window, term_crit)
+#
+#    # Draw it on image
+#    x,y,w,h = track_window
+#    cv2.rectangle(frame, (x,y), (x+w,y+h), 255,2)
+#    #print(cv2.rectangle(frame, (x,y), (x+10,y+10),(0,0,255)))
+#    cv2.imshow('frame',frame)
+#
+#    k = cv2.waitKey(60) & 0xff    
+#    
+## while(1):
+##    ret, frame = cap.read()
+#
+#    # fgmask = fgbg.apply(frame)
+#
+#    # cv2.imshow('frame',fgmask)
+#    # k = cv2.waitKey(30) & 0xff
+#    # if k == 27:
+#    #     break
+##%%
+#cap.release()
+#cv2.destroyAllWindows()
