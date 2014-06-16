@@ -21,7 +21,7 @@ import httplib, urllib
 #import pushover
 import thread
 import scipy.io as sio
-
+import sys
 #def send_note(msg):
 #	pushover.init("acfZ42h7KMGmAdbzyCBZxkDwTrzhPN")
 #	client = pushover.Client("uxFdSnAMc9D9kcBdgZWYkW3mwynUvc")
@@ -72,12 +72,13 @@ def getbg():
     #double backgroundRatio, double noiseSigma=0
 if dobg:
     getbg()    
-def readweb():
-    ret, frame = cap.read()
+def readweb(doshow):
+    ret, frame = cap.read(doshow)
     #fgmask = fgbg.apply(frame)
     #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('frame',frame)
-    k = cv2.waitKey(10) & 0xff        
+    if doshow:
+	    cv2.imshow('frame',frame)
+	    k = cv2.waitKey(3) & 0xff        
     return frame
 def readkinect():
     (depth,_), (rgb,_) = get_depth(), get_video()
@@ -93,17 +94,17 @@ def readkinect():
     #fgmask = fgbg.apply(frame)
     #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     cv2.imshow('frame',frame)
-    k = cv2.waitKey(30) & 0xff
+    k = cv2.waitKey(3) & 0xff
     return frame
     #if k == 27:
     #    break
 #ret, frame = cap.read()
-def read():
+def read(doshow):
     global frame
     if dokinect:
         frame=readkinect()
     else:
-        frame=readweb()
+        frame=readweb(doshow)
     out.write(frame)        
     return frame
 def skip():
@@ -121,7 +122,7 @@ def readbg():
     #frame=frame-fgmask
     
     cv2.imshow('frame',frame)
-    k = cv2.waitKey(10) & 0xff
+    k = cv2.waitKey(3) & 0xff
 
     
 #% SIMPLEBLOB
@@ -135,16 +136,16 @@ params.filterByCircularity = 0
 params.filterByConvexity = 0
 params.filterByInertia = 0
 params.blobColor = 1
-params.minThreshold = 0.
-params.maxThreshold = 520. #def 220
-params.thresholdStep=10#def 10
+params.minThreshold = 100.
+params.maxThreshold = 220. #def 220
+params.thresholdStep=30#def 10
 surf = cv2.SimpleBlobDetector(params)    
 
 def readbgblob():
     global kp
     #ret, frame = cap.read()
     #frame=cv2.resize(frame, (0,0), fx=0.5, fy=0.5) 
-    frame=read()
+    frame=read(1)
     #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     if dobg:
         fgmask = fgbg.apply(frame)
@@ -165,7 +166,7 @@ def readbgblob():
     #plt.imshow(img),plt.show(),plt.draw()
     #cv2.imshow('frame',frame)
     cv2.imshow('bgoff_blobs',img2)
-    k = cv2.waitKey(30) & 0xff
+    k = cv2.waitKey(1) & 0xff
     if not kp:
         print 'no blobs'
         return (0,0) 
@@ -181,7 +182,7 @@ def readbgblob():
 #    for i in range(1,20):
 #        readbgsurf()
 def readbgblob10():
-    for i in range(1,20):
+    for i in range(1,10):
         x=readbgblob()        
         print x
 def readbgblob100():
@@ -205,11 +206,11 @@ def center_from_rectangle(top_left,w,h,img):
     center = (top_left[0] + w/2, top_left[1] + h/2)
     cv2.circle(img,center,w/2,0)
     plt.imshow(img,cmap = 'gray')
-    plt.show()
+    #plt.show()
     return center
 def get_match(templatename):
     for i in range(1,7):
-        img=read()
+        img=read(1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(templatename,0)
     w, h = template.shape[::-1]
@@ -224,7 +225,7 @@ def get_match(templatename):
     center=center_from_rectangle(top_left,w,h,img);
     return center    
 def get_center():
-    templatename="/home/m/Dropbox/maze/templates/center1.jpg"
+    templatename="templates/center1.jpg"
     center=get_match(templatename)
     return center
 
@@ -243,9 +244,10 @@ def close_when_in():
     x=0;
     while dista(x,center)<100:
         x=readbgblob()
+#sys.exit()
 #%% match to arms:
 def get_arm_coord(narm):
-    templatename="/home/m/Dropbox/maze/templates/arm"+str(narm)+".jpg"        
+    templatename="templates/arm"+str(narm)+".jpg"        
     o=get_match(templatename)
     print o
     return o        
@@ -514,8 +516,8 @@ def ram_6_2(ntrials,dotakebg):
         send_note("intertrial")   
         print 'all done, next trial please'
         #% save data to disk
-        sio.savemat('/home/m/Dropbox/maze/'+daname,{'d':d})
-        f = open('/home/m/Dropbox/maze/'+daname+'.csv', 'wb')    
+        sio.savemat('~/maze/'+daname,{'d':d})
+        f = open('~/maze/'+daname+'.csv', 'wb')    
         dict_writer = csv.DictWriter(f,keys)
         dict_writer.writer.writerow(keys)
         dict_writer.writerows(d)
