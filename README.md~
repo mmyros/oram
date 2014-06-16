@@ -1,0 +1,4 @@
+prerequisites:
+
+sudo pip install pyfirmata
+

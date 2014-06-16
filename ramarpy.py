@@ -7,9 +7,9 @@ Created on Mon Feb 24 13:48:41 2014
 # 4 noisy but works
 # 
 #%% load arduino definitions from a def file
-execfile("/home/m/Dropbox/maze/ramarpydefs.py")
+#execfile("ramarpydefs.py")
 #% load opencv definitions
-execfile('/home/m/Dropbox/maze/ramviddefs.py')
+execfile('ramviddefs_notpushy.py')
 #% move servo's pin 4 to closed position
 #moveall(4,0)
 #% start the background job
